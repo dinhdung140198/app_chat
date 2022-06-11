@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
@@ -8,6 +10,7 @@ class AuthForm extends StatefulWidget {
     String email,
     String userName,
     String passWord,
+    File image,
     bool isLogin,
     BuildContext ctx,
   ) submitFn;
@@ -22,20 +25,32 @@ class _AuthFormState extends State<AuthForm> {
   String? _userEmail = '';
   String? _userName = '';
   String? _userPassword = '';
+  File? _userImageFile;
 
   void _trySubmit() {
     final isValid = _keyForm.currentState!.validate();
     FocusScope.of(context).unfocus();
+    if (_userImageFile == null && !_isLogin) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: const Text('Please pick an image.'),
+        backgroundColor: Theme.of(context).errorColor,
+      ));
+    }
     if (isValid) {
       _keyForm.currentState!.save();
       widget.submitFn(
         _userEmail!.trim(),
         _userName!.trim(),
         _userPassword!.trim(),
+        _userImageFile!,
         _isLogin,
         context,
       );
     }
+  }
+
+  void _pickedImage(File image) {
+    _userImageFile = image;
   }
 
   @override
